@@ -18,7 +18,12 @@ scoobydoo_1[colsCaught] <- lapply(scoobydoo_1[colsCaught], as.logical)
 scoobydoo_1$caught_team <- (rowSums(scoobydoo_1[colsCaught])>0)
 
 colsSnack <- c("snack_fred", "snack_daphnie", "snack_velma", "snack_shaggy", "snack_scooby")
-scoobydoo_1[colsSnack] <- lapply(scoobydoo_1[colsSnack], as.logical)
+
+scoobydoo_1[colsSnack] <- lapply(scoobydoo_1[colsSnack], function(col) {
+  col <- as.logical(col)
+  col[is.na(col)] <- FALSE
+  return(col)
+}) 
 scoobydoo_1$snack_team <- rowSums(scoobydoo_1[colsSnack])
 mean(scoobydoo_1$snack_team, na.rm = TRUE)
 
