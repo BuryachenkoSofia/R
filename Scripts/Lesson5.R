@@ -3,6 +3,8 @@
 # Заряди RStudio той насущний на роботу припотужну.
 # Нехай кожне запитання, що стане на його шляху, заходить і не лагає.
 # Гойда 
+library(dplyr)
+library(tidyverse)
 
 DNAseq <- function(x) {
   basepair <- c("A", "T", "G", "C")
@@ -16,7 +18,6 @@ DNAseq <- function(x) {
   return(stringss)
   })), collapse = "")
 }
-DNAseq("ATCGat")
 
 RNAseq <- function(x) {
   basepair <- c("A", "U", "G", "C")
@@ -30,7 +31,6 @@ RNAseq <- function(x) {
     return(stringss)
   })), collapse = "")
 }
-RNAseq("AUCGau")
 
 mRNA <- function(x) {
   basepair <- c("A", "T", "G", "C")
@@ -44,7 +44,6 @@ mRNA <- function(x) {
     return(stringss)
   })), collapse = "")
 }
-mRNA("AUCGTWAGCTG")
 
 GC_count <- function(seq){
   seq <- toupper(seq)
@@ -55,4 +54,28 @@ GC_count <- function(seq){
   percent <- (gc/valid)*100
   return(percent)
 }
-GC_count("ATGCAAT")
+
+split_codon <- function(seq){
+  seq <- gsub("[^ATGC]", "", toupper(seq))
+  substring(seq,seq(1,nchar(seq)-2,3),seq(3,nchar(seq),3))
+}
+
+count_bases <- function(seq){
+  seq <- gsub("[^ATGC]", "", toupper(seq))
+  bases <- strsplit(seq,NULL)[[1]]
+  table(factor(bases, levels = c("A", "T", "G", "C")))
+}
+
+count_A <- function(seq){
+  seq <- toupper(seq)
+  sum(unlist(strsplit(seq, NULL)) == "A")
+}
+
+barplot(count_bases("ATGCATGCRTGA"))
+
+df <- data.frame(ID = c(1,2,3,4,5), Samples = c("ATGGCAATGGCA", "AAAAATTCGCTT","TCGTCAACCTGG","ACTGATTGTCCA","CCGTATGACTGG"))
+df <- df %>% 
+  mutate(GC_count = sapply(Samples, GC_count),
+         count_A = sapply(Samples,count_A))
+barplot(df$count_A, names.arg = df$ID)
+View(df)
