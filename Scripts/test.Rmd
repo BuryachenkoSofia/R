@@ -1,0 +1,32 @@
+---
+title: "test"
+output: html_document
+---
+
+```{r DNA to RNA}
+dna_to_rna <- function(dna_seq){
+  #rna_seq <- chartr("T","U",toupper(dna_seq))
+  toupper(dna_seq) |> (\(x) chartr("T","U", x))()
+}
+```
+
+```{r}
+dna <- "ATGCCCTGA"
+rna <- dna_to_rna(dna)
+```
+
+```{r split codons}
+split_codon <- function(seq){
+  seq <- gsub("[^ATGC]", "", toupper(seq))
+  codons <- substring(seq,seq(1,nchar(seq)-2,3),seq(3,nchar(seq),3))
+  codons[nchar(codons)==3]
+}
+```
+
+```{r}
+frame_2 <- function(seq){
+  n <- nchar(seq)
+  codons <- substring(seq,seq(2,n,3),seq(4,n,3))
+  codons[nchar(codons)==3]
+}
+```
